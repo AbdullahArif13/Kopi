@@ -2,13 +2,11 @@ import { Routes, Route } from "react-router-dom";
 import { lazy, Suspense } from 'react';
 
 const AuthPage = lazy(() => import("../pages/Auth/AuthPage"));
-const Login = lazy(() => import("../pages/Login"));
-const Menu = lazy(() => import("../pages/Menu"));
-const Pembayaran = lazy(() => import("../pages/Pembayaran"));
-const RincianPesanan = lazy(() => import("../pages/RincianPesanan"));
-const RincianPembayaran = lazy(() => import("../pages/RincianPembayaran"));
-const Registrasi = lazy(() => import("../pages/Registrasi"));
-const Profil = lazy(() => import("../pages/Profil"));
+const Menu = lazy(() => import("../pages/menu/MenuPage"));
+const Pembayaran = lazy(() => import("../Pages/Pembayaran/PembayaranPage"));
+const Profil = lazy(() => import("../pages/Profil/Profil"));
+const ManajemenMenu = lazy(() => import("../pages/Admin/ManajemenMenu"));
+const ManajemnPesanan = lazy(() => import("../pages/Admin/ManajemenPesanan"));
 
 const LoadingSpinner = () => (
     <div className="flex items-center justify-center h-screen">
@@ -21,13 +19,11 @@ const AppRoutes = () => {
         <Suspense fallback={<LoadingSpinner />}>
             <Routes>
                 <Route path="/" element={<AuthPage />} />
-                <Route path="/login" element={<Login />} />
                 <Route path="/menu" element={<Menu />} />
                 <Route path="/pembayaran" element={<Pembayaran />} />
-                <Route path="/rincian-pesanan" element={<RincianPesanan />} />
-                <Route path="/rincian-pembayaran" element={<RincianPembayaran />} />
-                <Route path="/register" element={<Registrasi />} />
                 <Route path="/profil" element={<Profil />} />
+                <Route path="/manajemenMenu" element={<ManajemenMenu />} />
+                <Route path="/manajemenPesanan" element={<ManajemnPesanan />} />
             </Routes>
         </Suspense>
     )
