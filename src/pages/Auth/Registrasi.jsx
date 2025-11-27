@@ -1,32 +1,23 @@
-import useRegistrasi from "./hooks/useRegistrasi";
+"use client"
+
+import useRegistrasi from "./hooks/useRegistrasi"
 
 export default function Registrasi({ setToggle }) {
-  const {
-    formData,
-    loading,
-    error,
-    handleInputChange,
-    handleSubmit,
-  } = useRegistrasi();
+  const { formData, loading, error, handleInputChange, handleSubmit } = useRegistrasi()
 
   return (
     <div className="min-h-screen bg-white flex flex-col">
-
       <div className="bg-gray-100 py-4 px-4">
         <h1 className="text-xl sm:text-2xl font-bold text-center">Registrasi</h1>
       </div>
 
       <div className="flex-1 flex flex-col items-center justify-start px-4 py-8">
-
-        <img src="/Gambar_Kopi.png" className="w-24 h-24 sm:w-32 sm:h-32 mb-6" />
+        <img src="/Gambar_Kopi.png" alt="Kopi Boedaja Logo" className="w-24 h-24 sm:w-32 sm:h-32 mb-6" />
 
         <h2 className="text-2xl sm:text-3xl font-bold mb-2">KOPI BOEDAJA</h2>
-        <p className="text-gray-600 text-sm mb-8">
-          Selamat datang di kedai kopi boedaja
-        </p>
+        <p className="text-gray-600 text-sm mb-8">Selamat datang di kedai kopi boedaja</p>
 
         <form onSubmit={handleSubmit} className="w-full max-w-sm space-y-4">
-
           {/* Name */}
           <div>
             <label className="block text-sm mb-2">Nama</label>
@@ -81,11 +72,7 @@ export default function Registrasi({ setToggle }) {
 
           {error && <p className="text-red-500 text-sm">{error}</p>}
 
-          <button
-            type="submit"
-            disabled={loading}
-            className="w-full bg-red-500 text-white py-3 rounded-lg"
-          >
+          <button type="submit" disabled={loading} className="w-full bg-red-500 text-white py-3 rounded-lg">
             {loading ? "Memproses..." : "Daftar"}
           </button>
         </form>
@@ -98,5 +85,5 @@ export default function Registrasi({ setToggle }) {
         </p>
       </div>
     </div>
-  );
+  )
 }
