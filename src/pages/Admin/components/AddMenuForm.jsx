@@ -34,8 +34,8 @@ export default function AddMenuForm({ categories, onClose, onSubmit }) {
   }
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-end z-50">
-      <div className="w-full bg-white rounded-t-2xl p-6 max-h-[90vh] overflow-y-auto">
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-end md:items-center justify-center z-50 p-0 md:p-4">
+      <div className="w-full bg-white rounded-t-2xl md:rounded-2xl p-6 max-h-[90vh] overflow-y-auto md:max-w-xl shadow-xl">
         <div className="flex items-center justify-between mb-6">
           <h2 className="text-2xl font-bold">Tipe Makanan</h2>
           <button onClick={onClose} className="p-1 hover:bg-gray-100 rounded-full">

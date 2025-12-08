@@ -15,7 +15,7 @@ export default function PesananDetail({ selectedOrder, calculatePayment, handleS
         <h1 className="text-lg font-semibold text-gray-900">Pesanan</h1>
       </div>
 
-      <div className="p-4 space-y-4">
+      <div className="p-4 space-y-4 pb-24">
         {/* items */}
         <div>
           <h2 className="font-semibold mb-4">Item yang dipesan ({totalItems})</h2>

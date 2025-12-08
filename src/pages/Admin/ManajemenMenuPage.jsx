@@ -21,7 +21,7 @@ export default function ManajemenMenuPage() {
     <div className="min-h-screen bg-gray-50 flex">
       <AdminSidebar isOpen={showSidebar} onClose={() => setShowSidebar(false)} />
 
-      <div className="flex-1">
+      <div className="flex-1 w-full">
         <header className="bg-white shadow-sm sticky top-0 z-10">
           <div className="flex items-center justify-between px-4 py-4">
             <h1 className="text-xl font-bold">KOPI BOEDAJA</h1>
@@ -49,8 +49,8 @@ export default function ManajemenMenuPage() {
           <CategoryTabs categories={categories} activeCategory={activeCategory} onChange={setActiveCategory} />
         </header>
 
-        <main className="p-4">
-          <div className="grid grid-cols-2 gap-4">
+        <main className="p-4 pb-24">
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
             {searchedItems.map((item) => (
               <MenuCard key={item.id} item={item} onDelete={() => deleteMenuItem(item.id)} />
             ))}

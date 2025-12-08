@@ -12,14 +12,13 @@ export default function PesananCard({ orders, expandedOrder, toggleOrder, handle
         <h1 className="text-lg font-semibold text-gray-900">Pesanan</h1>
       </div>
 
-      <div className="p-4 space-y-3">
+      <div className="p-4 space-y-3 md:space-y-0 md:grid md:grid-cols-2 lg:grid-cols-3 md:gap-4 md:items-start">
         {orders.map((order) => (
           <div key={order.id} className="bg-white rounded-lg border overflow-hidden">
             <button
               onClick={() => toggleOrder(order.id)}
-              className={`w-full px-4 py-3 flex items-center justify-between ${
-                expandedOrder === order.id ? "bg-blue-100" : "bg-white hover:bg-gray-50"
-              }`}
+              className={`w-full px-4 py-3 flex items-center justify-between ${expandedOrder === order.id ? "bg-blue-100" : "bg-white hover:bg-gray-50"
+                }`}
             >
               <div className="flex items-center gap-3">
                 <Table size={20} className="text-gray-600" />
@@ -52,15 +51,25 @@ export default function PesananCard({ orders, expandedOrder, toggleOrder, handle
                 ))}
               </div>
             )}
+            {expandedOrder === order.id && (
+              <div className="px-4 pb-4 hidden md:block">
+                <button
+                  onClick={() => handleSelesai(order)}
+                  className="w-full bg-teal-700 text-white py-2 rounded-lg hover:bg-teal-800 transition-colors"
+                >
+                  Selesai
+                </button>
+              </div>
+            )}
           </div>
         ))}
       </div>
 
       {expandedOrder && (
-        <div className="fixed bottom-0 left-0 right-0 p-4 bg-white border-t">
+        <div className="fixed bottom-0 left-0 right-0 p-4 bg-white border-t md:hidden">
           <button
             onClick={() => handleSelesai(orders.find(o => o.id === expandedOrder))}
-            className="w-full bg-teal-700 text-white py-4 rounded-lg"
+            className="w-full bg-teal-700 text-white py-4 rounded-lg shadow-lg hover:bg-teal-800 transition-colors"
           >
             Selesai
           </button>
