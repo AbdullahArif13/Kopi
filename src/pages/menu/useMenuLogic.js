@@ -1,18 +1,41 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 
 export default function useMenuLogic(initialProducts = []) {
-  const [cart, setCart] = useState([]);
+  const navigate = useNavigate();
+
+  const [cart, setCart] = useState(() => {
+    const saved = localStorage.getItem("cart");
+    return saved ? JSON.parse(saved) : [];
+  });
+
   const [productQuantities, setProductQuantities] = useState({});
   const [addedProducts, setAddedProducts] = useState(new Set());
   const [activeTab, setActiveTab] = useState("hot");
 
-  const addToCart = (product) => {
-    setAddedProducts((prev) => new Set(prev).add(product.id));
-    setProductQuantities((prev) => ({ ...prev, [product.id]: (prev[product.id] || 0) + 1 }));
+  useEffect(() => {
+    localStorage.setItem("cart", JSON.stringify(cart));
 
+    const quantities = {};
+    const added = new Set();
+
+    cart.forEach((item) => {
+      quantities[item.id] = item.quantity;
+      if (item.quantity > 0) added.add(item.id);
+    });
+
+    setProductQuantities(quantities);
+    setAddedProducts(added);
+  }, [cart]);
+
+  const addToCart = (product) => {
     setCart((prev) => {
       const existing = prev.find((i) => i.id === product.id);
-      if (existing) return prev.map((i) => i.id === product.id ? { ...i, quantity: i.quantity + 1 } : i);
+      if (existing) {
+        return prev.map((i) =>
+          i.id === product.id ? { ...i, quantity: i.quantity + 1 } : i
+        );
+      }
       return [...prev, { ...product, quantity: 1 }];
     });
   };
@@ -20,35 +43,35 @@ export default function useMenuLogic(initialProducts = []) {
   const increaseQty = (product) => addToCart(product);
 
   const decreaseQty = (productId) => {
-    setProductQuantities((prev) => {
-      const newQty = (prev[productId] || 0) - 1;
-      if (newQty <= 0) {
-        setAddedProducts((old) => {
-          const ns = new Set(old);
-          ns.delete(productId);
-          return ns;
-        });
-        return { ...prev, [productId]: 0 };
-      }
-      return { ...prev, [productId]: newQty };
-    });
-
-    setCart((prev) => prev
-      .map((i) => i.id === productId ? { ...i, quantity: i.quantity - 1 } : i)
-      .filter((i) => i.quantity > 0)
+    setCart((prev) =>
+      prev
+        .map((i) =>
+          i.id === productId
+            ? { ...i, quantity: i.quantity - 1 }
+            : i
+        )
+        .filter((i) => i.quantity > 0)
     );
   };
 
   const totalItems = cart.reduce((sum, i) => sum + i.quantity, 0);
   const totalPrice = cart.reduce((sum, i) => sum + i.price * i.quantity, 0);
 
-  const filteredProducts = initialProducts.filter((p) => p.category === activeTab);
+  const filteredProducts = initialProducts.filter(
+    (p) => p.category === activeTab
+  );
+
+  const onCheckout = (cart) => {
+    localStorage.setItem("cart", JSON.stringify(cart));
+    navigate("/pembayaran");
+  };
 
   return {
     cart,
     productQuantities,
     addedProducts,
     activeTab,
+    onCheckout,
     setActiveTab,
     addToCart,
     increaseQty,

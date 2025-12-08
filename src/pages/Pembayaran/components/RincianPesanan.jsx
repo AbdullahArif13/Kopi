@@ -1,14 +1,18 @@
 import { useState } from "react";
-import { ChevronLeft, Plus, Minus, Edit2 } from 'lucide-react';
+import { ChevronLeft, Plus, Minus, Pencil } from 'lucide-react';
 
-export default function RincianPesanan({ onBack, onToPembayaran, items = [] }) {
+export default function RincianPesanan({ onBack, onContinue, items = [], onEdit, onAddMore }) {
   const [orderItems, setOrderItems] = useState(items);
 
   const handleQuantity = (id, newQty) => {
-    setOrderItems(prev => prev.map(i => i.id === id ? { ...i, quantity: newQty } : i).filter(i => i.quantity > 0));
+    setOrderItems(prev =>
+      prev
+        .map(i => (i.id === id ? { ...i, quantity: newQty } : i))
+        .filter(i => i.quantity > 0)
+    );
   };
 
-  const subtotal = orderItems.reduce((sum, item) => sum + item.price * item.quantity, 0);
+  const subtotal = orderItems.reduce((s, i) => s + i.price * i.quantity, 0);
   const serviceCharge = 1000;
   const discount = 0;
   const otherFees = 2300;
@@ -25,16 +29,41 @@ export default function RincianPesanan({ onBack, onToPembayaran, items = [] }) {
       </div>
 
       <div className="px-4 py-6 max-w-4xl mx-auto">
+        <div className="flex justify-between items-center mb-4">
+          <h2 className="font-semibold text-gray-800">Item yang dipesan ({orderItems.reduce((acc, item) => acc + item.quantity, 0)})</h2>
+          <button
+            onClick={onAddMore}
+            className="text-green-600 font-medium text-sm flex items-center gap-1 border border-green-600 rounded-lg px-3 py-1.5 hover:bg-green-50 active:scale-95 transition-all"
+          >
+            <Plus size={16} /> Tambah
+          </button>
+        </div>
+
         {orderItems.map(item => (
           <div key={item.id} className="mb-4 border-b border-gray-300 pb-3">
             <div className="flex justify-between items-center">
-              <span>{item.name}</span>
-              <span>Rp{item.price.toLocaleString()}</span>
+              <span className="font-medium">{item.name}</span>
+              <button
+                onClick={() => onEdit && onEdit(item)}
+                className="text-gray-500 hover:text-blue-600 transition p-1"
+                aria-label="Edit item"
+              >
+                <Pencil size={18} />
+              </button>
             </div>
-            <div className="flex items-center gap-2 mt-2">
-              <button onClick={() => handleQuantity(item.id, item.quantity - 1)}><Minus size={16} /></button>
-              <span>{item.quantity}</span>
-              <button onClick={() => handleQuantity(item.id, item.quantity + 1)}><Plus size={16} /></button>
+
+            <div className="flex justify-between items-center mt-2">
+              <span className="text-gray-600">Rp{item.price.toLocaleString()}</span>
+
+              <div className="flex items-center gap-2">
+                <button onClick={() => handleQuantity(item.id, item.quantity - 1)}>
+                  <Minus size={16} />
+                </button>
+                <span className="w-6 text-center">{item.quantity}</span>
+                <button onClick={() => handleQuantity(item.id, item.quantity + 1)}>
+                  <Plus size={16} />
+                </button>
+              </div>
             </div>
           </div>
         ))}
@@ -63,7 +92,7 @@ export default function RincianPesanan({ onBack, onToPembayaran, items = [] }) {
         </div>
 
         <button
-          onClick={() => onToPembayaran && onToPembayaran(orderItems)}
+          onClick={() => onContinue && onContinue(orderItems)}
           className="mt-4 w-full bg-blue-900 text-white py-3 rounded-lg font-bold hover:bg-blue-950 transition"
         >
           Lanjut Pembayaran

@@ -5,8 +5,9 @@ import ProductCard from "./components/ProductCard";
 import CheckoutFooter from "./components/CheckoutFooter";
 import Tabs from "./components/Tabs";
 import StoreHeader from "./components/StoreHeader";
+import { productsDummy } from "../../data/productsData";
 
-export default function MenuPage({ onCheckout, products = [], storeInfo = {} }) {
+export default function MenuPage({ products = [], storeInfo = {} }) {
   const navigate = useNavigate();
   const {
     cart,
@@ -20,6 +21,7 @@ export default function MenuPage({ onCheckout, products = [], storeInfo = {} }) 
     decreaseQty,
     totalItems,
     totalPrice,
+    onCheckout,
   } = useMenuLogic(products);
 
   const categories = [
@@ -63,8 +65,8 @@ export default function MenuPage({ onCheckout, products = [], storeInfo = {} }) 
 
         {/* Products Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 sm:gap-6 mb-32">
-          {filteredProducts.length > 0
-            ? filteredProducts.map((p) => (
+          {productsDummy.length > 0
+            ? productsDummy.map((p) => (
               <ProductCard
                 key={p.id}
                 product={p}

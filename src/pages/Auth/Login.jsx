@@ -9,7 +9,8 @@ export default function Login({ setToggle }) {
 
   const handleSubmit = async (e) => {
     e.preventDefault()
-    const res = await login()
+    // const res = await login()
+    const res = true
 
     if (res) {
       localStorage.setItem("token", res.token)
@@ -25,7 +26,7 @@ export default function Login({ setToggle }) {
       </div>
 
       <div className="flex-1 flex flex-col items-center justify-start px-4 py-8">
-        <img src="/Gamber_Kopi.png" alt="Kopi Boedaja Logo" className="w-24 h-24 mb-6" />
+        <img src="/Gambar_Kopi.png" alt="Kopi Boedaja Logo" className="w-24 h-24 mb-6" />
 
         <h2 className="text-2xl font-bold mb-2">KOPI BOEDAJA</h2>
         <p className="text-gray-600 text-sm mb-8">Selamat datang</p>
@@ -38,7 +39,7 @@ export default function Login({ setToggle }) {
               name="email"
               value={formData.email}
               onChange={handleInputChange}
-              className="w-full px-4 py-3 bg-gray-700 text-white rounded-lg"
+              className="bg-[#393C49] border border-gray-300 text-white text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
             />
           </div>
 
@@ -49,7 +50,7 @@ export default function Login({ setToggle }) {
               name="password"
               value={formData.password}
               onChange={handleInputChange}
-              className="w-full px-4 py-3 bg-gray-700 text-white rounded-lg"
+              className="bg-[#393C49] border border-gray-300 text-white text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
             />
           </div>
 

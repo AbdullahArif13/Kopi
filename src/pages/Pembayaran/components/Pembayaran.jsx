@@ -1,11 +1,14 @@
-import { ChevronLeft } from 'lucide-react';
+import { ChevronLeft, AlertTriangle } from 'lucide-react';
+import { generateOrderCode } from '../../../utils/generateOrderCode';
 
-export default function Pembayaran({ onBack, total = 0, paymentData = {}, onNewOrder }) {
+export default function Pembayaran({ onBack, paymentData = {}, onNewOrder }) {
   const subtotal = paymentData.subtotal || 0;
   const serviceCharge = paymentData.serviceCharge || 0;
   const discount = paymentData.discount || 0;
   const otherFees = paymentData.otherFees || 0;
-  const orderNumber = paymentData.orderNumber || "";
+  const orderCode = generateOrderCode()
+
+  const total = subtotal + serviceCharge + otherFees - discount;
 
   return (
     <main className="bg-gray-100 min-h-screen pb-28 sm:pb-32">
@@ -20,6 +23,26 @@ export default function Pembayaran({ onBack, total = 0, paymentData = {}, onNewO
 
       {/* Rincian Pembayaran */}
       <div className="px-4 sm:px-6 lg:px-8 py-6 max-w-2xl mx-auto">
+
+        {/* Order Code Section */}
+        <div className="bg-white rounded-2xl p-5 sm:p-6 mb-6">
+          <label className="block text-sm font-bold text-gray-700 mb-2">
+            Nomor Pesanan
+          </label>
+          <div className="bg-gray-50 border border-gray-200 rounded-lg py-4 text-center">
+            <span className="font-mono text-2xl font-bold tracking-[0.2em] text-gray-800">
+              {orderCode}
+            </span>
+          </div>
+
+          <div className="mt-3 bg-yellow-50 border border-yellow-200 rounded-lg p-3 flex gap-3 text-yellow-800">
+            <AlertTriangle size={20} className="shrink-0 mt-0.5 text-yellow-600" />
+            <p className="text-sm font-medium">
+              Silahkan tunjukan 8 digit nomor pesanan ke staff kasir kami
+            </p>
+          </div>
+        </div>
+
         <div className="bg-white rounded-2xl p-5 sm:p-6 mb-6">
           <h2 className="text-center font-bold text-base sm:text-lg lg:text-xl mb-6">Rincian Pesanan</h2>
           <div className="space-y-4">

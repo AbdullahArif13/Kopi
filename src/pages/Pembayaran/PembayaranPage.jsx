@@ -1,80 +1,88 @@
 import { useState } from "react";
-import RincianPesanan from "./Components/RincianPesanan";
-import RincianPembayaran from "./Components/RincianPembayaran";
-import Pembayaran from "./Components/Pembayaran";
+import { useNavigate } from "react-router-dom";
+
+import RincianPesanan from "./components/RincianPesanan";
+import RincianPembayaran from "./components/RincianPembayaran";
+import Pembayaran from "./components/Pembayaran";
 
 import useRincianPesanan from "./useRincianPesanan";
 import useRincianPembayaran from "./useRincianPembayaran";
-import usePembayaran from "./usePembayar";
+import usePembayaran from "./usePembayaran";
 
 export default function PembayaranPage() {
-  const [currentStep, setCurrentStep] = useState("rincian-pesanan"); // steps: rincian-pesanan, rincian-pembayaran, pembayaran
+  const navigate = useNavigate();
+  const [step, setStep] = useState("pesanan");
   const [paymentData, setPaymentData] = useState({});
-  const [total, setTotal] = useState(0);
 
-  // Hook untuk Rincian Pesanan
-  const pesananHook = useRincianPesanan([
-    { id: "1", name: "Kopi Susu", price: 12000, quantity: 1, notes: "" },
-    { id: "2", name: "Cappuccino", price: 15000, quantity: 2, notes: "" },
-  ]);
+  // Load cart from localStorage
+  const initialCart = JSON.parse(localStorage.getItem("cart") || "[]");
 
-  // Hook untuk Rincian Pembayaran
-  const pembayaranFormHook = useRincianPembayaran(total);
+  const pesananHook = useRincianPesanan(initialCart);
+  const formHook = useRincianPembayaran();
+  const pembayaranHook = usePembayaran(paymentData);
 
-  // Hook untuk Pembayaran final
-  const pembayaranHook = usePembayaran(total, paymentData);
+  // STEP: Pesanan → Form
+  const goToRincianPembayaran = () => {
+    const subtotal = pesananHook.subtotal;
+    const serviceCharge = pesananHook.serviceCharge;
+    const otherFees = pesananHook.otherFees;
+    const discount = pesananHook.discount;
+    const total = pesananHook.total;
 
-  const handleBack = () => {
-    if (currentStep === "rincian-pembayaran") setCurrentStep("rincian-pesanan");
-    else if (currentStep === "pembayaran") setCurrentStep("rincian-pembayaran");
+    setPaymentData({
+      items: pesananHook.orderItems,
+      subtotal,
+      serviceCharge,
+      otherFees,
+      discount,
+      total
+    });
+
+    setStep("form");
   };
 
-  const handleToRincianPembayaran = (items) => {
-    // Hitung total dari items
-    const subtotal = items.reduce((sum, item) => sum + item.price * item.quantity, 0);
-    const serviceCharge = 1000;
-    const otherFees = 2300;
-    const discount = 0;
-    const total = subtotal + serviceCharge + otherFees - discount;
-
-    setTotal(total);
-    setPaymentData({ subtotal, serviceCharge, otherFees, discount, items });
-    setCurrentStep("rincian-pembayaran");
-  };
-
-  const handleToPembayaran = (formData) => {
-    // Gabungkan data form dan total
-    setPaymentData((prev) => ({
+  // STEP: Form → Final Pembayaran
+  const goToPembayaran = (formData) => {
+    setPaymentData(prev => ({
       ...prev,
-      customerInfo: formData,
-      total,
+      customer: formData
     }));
-    setCurrentStep("pembayaran");
+    setStep("final");
+  };
+
+  // Placeholder for Edit functionality
+  const handleEdit = (item) => {
+    console.log("Edit item:", item);
+    alert(`Edit functionality for ${item.name} is coming soon!`);
   };
 
   return (
     <>
-      {currentStep === "rincian-pesanan" && (
+      {step === "pesanan" && (
         <RincianPesanan
-          onBack={() => console.log("Kembali ke menu")}
+          onBack={() => navigate("/menu")}
           items={pesananHook.orderItems}
-          onToPembayaran={handleToRincianPembayaran}
+          onQuantityChange={pesananHook.handleQuantityChange}
+          onContinue={goToRincianPembayaran}
+          onEdit={handleEdit}
+          onAddMore={() => navigate("/menu")}
         />
       )}
 
-      {currentStep === "rincian-pembayaran" && (
+      {step === "form" && (
         <RincianPembayaran
-          onBack={handleBack}
-          total={total}
-          onToPembayaran={handleToPembayaran}
+          formData={formHook.formData}
+          onChange={formHook.handleInputChange}
+          onContinue={() => formHook.handleContinue(goToPembayaran)}
+          onBack={() => setStep("pesanan")}
         />
       )}
 
-      {currentStep === "pembayaran" && (
+      {step === "final" && (
         <Pembayaran
-          onBack={handleBack}
-          total={paymentData.total}
-          paymentData={paymentData}
+          paymentData={pembayaranHook}
+          onBack={() => setStep("form")}
+          onNewOrder={() => navigate("/menu")}
         />
       )}
     </>

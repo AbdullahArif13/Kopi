@@ -1,33 +1,33 @@
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useState, useMemo } from "react";
 
 export default function useRincianPesanan(initialItems = []) {
-  const navigation = useNavigate();
   const [orderItems, setOrderItems] = useState(initialItems);
 
   const handleQuantityChange = (id, newQty) => {
     setOrderItems(prev =>
       prev
-        .map(item => (item.id === id ? { ...item, quantity: newQty } : item))
+        .map(item =>
+          item.id === id ? { ...item, quantity: newQty } : item
+        )
         .filter(item => item.quantity > 0)
     );
   };
 
-  const handleAddItem = (newItem) => {
-    setOrderItems(prev => [...prev, { ...newItem, id: Date.now().toString() }]);
+  const handleAddItem = (item) => {
+    setOrderItems(prev => [...prev, item]);
   };
 
-  const subtotal = orderItems.reduce((sum, item) => sum + item.price * item.quantity, 0);
+  const subtotal = useMemo(
+    () => orderItems.reduce((sum, item) => sum + item.price * item.quantity, 0),
+    [orderItems]
+  );
+
   const serviceCharge = 1000;
-  const discount = 0;
   const otherFees = 2300;
+  const discount = 0;
+
   const total = subtotal + serviceCharge + otherFees - discount;
   const totalItems = orderItems.reduce((sum, item) => sum + item.quantity, 0);
-
-  const goToRincianPembayaran = (onToPembayaran) => {
-    if (onToPembayaran) onToPembayaran(orderItems);
-    navigation("/rincian-pembayaran");
-  };
 
   return {
     orderItems,
@@ -35,10 +35,9 @@ export default function useRincianPesanan(initialItems = []) {
     handleAddItem,
     subtotal,
     serviceCharge,
-    discount,
     otherFees,
+    discount,
     total,
     totalItems,
-    goToRincianPembayaran,
   };
 }
