@@ -42,6 +42,7 @@ export const authService = {
         try {
             const res = await axiosClient.post("/auth/register", {
                 name,
+                phone,
                 email,
                 password,
                 role: "customer"
@@ -62,6 +63,7 @@ export const authService = {
             const newUser = {
                 id: Date.now(),
                 name,
+                phone,
                 email,
                 password,
                 role: "customer"

@@ -1,26 +1,48 @@
-import { ChevronLeft, User, Phone, Mail, Building2 } from 'lucide-react';
-import { generateOrderCode } from '../../../utils/generateOrderCode';
+import { useEffect } from "react";
+import { ChevronLeft, User, Phone, Mail, Building2 } from "lucide-react";
+import { generateOrderCode } from "../../../utils/generateOrderCode";
 
 export default function RincianPembayaran({ onBack, onContinue, formData, onChange }) {
 
+  // Generate nomor meja otomatis
+  const generateTableNumber = () => {
+    const randomNumber = Math.floor(Math.random() * 28) + 1;
+    return `Lantai 1 - ${randomNumber}`;
+  };
+
+  // Ambil user dari localSession + auto fill
+  useEffect(() => {
+    const savedUser = JSON.parse(localStorage.getItem("user"));
+
+    if (savedUser) {
+      onChange("fullName", savedUser.name || "");
+      onChange("phone", savedUser.phone || "");
+      onChange("email", savedUser.email || "");
+    }
+
+    // Auto-isi nomor meja jika belum diisi
+    if (!formData.tableNumber) {
+      onChange("tableNumber", generateTableNumber());
+    }
+  }, []);
 
   const handleSubmit = () => {
     if (!formData.fullName || !formData.phone || !formData.email || !formData.tableNumber) {
       alert("Mohon lengkapi semua data");
       return;
     }
-    // Generate Order Code on the fly before continue
-    const generatedOrderCode = generateOrderCode();
 
-    // Include orderCode in the form data if needed by parent
+    const generatedOrderCode = generateOrderCode();
     onContinue({ ...formData, orderCode: generatedOrderCode });
   };
 
+  const savedUser = JSON.parse(localStorage.getItem("user"));
+
   const fields = [
-    { label: "Nama Lengkap", field: "fullName", icon: User, required: true },
-    { label: "Nomor Ponsel", field: "phone", icon: Phone, required: true },
-    { label: "Email", field: "email", icon: Mail, required: true },
-    { label: "Nomor Meja", field: "tableNumber", icon: Building2, required: true },
+    { label: "Nama Lengkap", field: "fullName", icon: User, required: true, disabled: savedUser },
+    { label: "Nomor Ponsel", field: "phone", icon: Phone, required: true, disabled: savedUser },
+    { label: "Email", field: "email", icon: Mail, required: true, disabled: savedUser },
+    { label: "Nomor Meja", field: "tableNumber", icon: Building2, required: true, disabled: true },
   ];
 
   return (
@@ -38,21 +60,25 @@ export default function RincianPembayaran({ onBack, onContinue, formData, onChan
       {/* Form */}
       <div className="px-4 py-6 max-w-2xl mx-auto space-y-6">
 
-
-        {fields.map(({ label, field, icon: Icon, required }) => (
+        {fields.map(({ label, field, icon: Icon, required, disabled }) => (
           <div key={field}>
             <label className="block text-xs sm:text-sm font-semibold mb-2">
               {label}{required && <span className="text-red-500">*</span>}
             </label>
 
-            <div className="flex items-center gap-3 bg-gray-100 rounded-lg px-4 py-3 border">
+            <div
+              className={`flex items-center gap-3 rounded-lg px-4 py-3 border 
+              ${disabled ? "bg-gray-200" : "bg-gray-100"}`}
+            >
               <Icon size={18} className="text-gray-500" />
+
               <input
                 type="text"
                 value={formData[field] || ""}
                 onChange={e => onChange(field, e.target.value)}
                 placeholder={`Masukkan ${label.toLowerCase()}`}
-                className="flex-1 bg-transparent outline-none text-sm sm:text-base"
+                disabled={disabled}
+                className="flex-1 bg-transparent outline-none text-sm sm:text-base disabled:text-gray-500"
               />
             </div>
           </div>
