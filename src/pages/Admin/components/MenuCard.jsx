@@ -5,7 +5,7 @@ import { Trash2 } from "lucide-react"
 export default function MenuCard({ item, onDelete }) {
   return (
     <div className="bg-white rounded-2xl shadow-sm overflow-hidden relative">
-      <div className="aspect-[4/3] bg-gray-300 flex items-center justify-center">
+      <div className="aspect-4/3 bg-gray-300 flex items-center justify-center">
         {item.image ? (
           <img src={item.image || "/placeholder.svg"} alt={item.name} className="w-full h-full object-cover" />
         ) : (

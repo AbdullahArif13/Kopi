@@ -1,61 +1,88 @@
-"use client"
+"use client";
 
-import { useState } from "react"
+import { useEffect, useState } from "react";
+import { orderService } from "../../service/orderService";
 
 export default function useManajemenPesanan() {
-  const [selectedOrder, setSelectedOrder] = useState(null)
-  const [expandedOrder, setExpandedOrder] = useState(null)
-  const [notes, setNotes] = useState("")
+  const [orders, setOrders] = useState([]);
+  const [expandedOrder, setExpandedOrder] = useState(null);
+  const [selectedOrder, setSelectedOrder] = useState(null);
+  const [notes, setNotes] = useState("");
 
-  const [orders] = useState([
-    {
-      id: 1,
-      table: "Meja 01",
-      code: "A123",
-      items: [
-        { name: "Cappuccino", quantity: 2, price: 23000, notes: "" },
-        { name: "Latte", quantity: 1, price: 25000, notes: "Less sugar" },
-      ]
-    },
-  ])
+  // Fetch orders
+  useEffect(() => {
+    let isMounted = true;
 
-  const calculatePayment = (order) => {
-    const subtotal = order.items.reduce((sum, i) => sum + i.price * i.quantity, 0)
-    const biayaTambahan = 1000
-    const pembulatan = 0
-    const biayaLainnya = Math.floor(subtotal * 0.1)
-    const total = subtotal + biayaTambahan + pembulatan + biayaLainnya
+    const fetchOrders = async () => {
+      const data = await orderService.getOrders();
+      if (isMounted) setOrders(data);
+    };
 
-    return { subtotal, biayaTambahan, pembulatan, biayaLainnya, total }
-  }
+    fetchOrders();
+
+    return () => {
+      isMounted = false;
+    };
+  }, []);
 
   const toggleOrder = (id) => {
-    setExpandedOrder(expandedOrder === id ? null : id)
-  }
+    setExpandedOrder((prev) => (prev === id ? null : id));
+  };
+
+  const handleBack = () => {
+    setSelectedOrder(null);
+    setNotes("");
+  };
 
   const handleSelesai = (order) => {
-    setSelectedOrder(order)
-    setExpandedOrder(null)
-  }
+    setSelectedOrder(order);
 
-  const handleSudahDibayar = () => {
-    alert(`Pesanan ${selectedOrder.code} telah selesai dibayar`)
-    setSelectedOrder(null)
-    setNotes("")
-  }
+    setExpandedOrder(null);
+  };
 
-  const handleBack = () => setSelectedOrder(null)
+  const handleSudahDibayar = async () => {
+    if (!selectedOrder) return;
+
+    await orderService.payOrder(selectedOrder.id);
+
+    setOrders((prev) => prev.filter((o) => o.id !== selectedOrder.id));
+
+    setSelectedOrder(null);
+    setNotes("");
+  };
+
+  const calculatePayment = (order) => {
+    const subtotal = order.items.reduce(
+      (total, item) => total + item.price * item.qty,
+      0
+    );
+
+    const biayaTambahan = 0;
+    const pembulatan = 0;
+    const biayaLainnya = 0;
+
+    const total = subtotal + biayaTambahan + pembulatan + biayaLainnya;
+
+    return {
+      subtotal,
+      biayaTambahan,
+      pembulatan,
+      biayaLainnya,
+      total,
+    };
+  };
 
   return {
     orders,
     selectedOrder,
     expandedOrder,
-    notes,
-    setNotes,
     toggleOrder,
     handleSelesai,
     handleSudahDibayar,
     handleBack,
-    calculatePayment
-  }
+    notes,
+    setNotes,
+    calculatePayment,
+    setSelectedOrder,
+  };
 }

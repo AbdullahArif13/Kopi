@@ -1,9 +1,11 @@
 "use client"
 
-import useRegistrasi from "./hooks/useRegistrasi"
+import { useNavigate } from "react-router-dom"
+import useAuth from "./useAuth"
 
 export default function Registrasi({ setToggle }) {
-  const { formData, loading, error, handleInputChange, handleSubmit } = useRegistrasi()
+  const { formData, loading, error, handleInputChange, handleSubmit } = useAuth()
+  const navigate = useNavigate()
 
   return (
     <div className="min-h-screen bg-white flex flex-col">
@@ -79,7 +81,7 @@ export default function Registrasi({ setToggle }) {
 
         <p className="text-sm text-gray-600 mt-4">
           Sudah punya akun?
-          <button onClick={setToggle} className="text-red-500 font-bold ml-1">
+          <button onClick={() => navigate("/")} className="text-red-500 font-bold ml-1">
             LOGIN
           </button>
         </p>

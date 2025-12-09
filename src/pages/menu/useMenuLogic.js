@@ -57,8 +57,26 @@ export default function useMenuLogic(initialProducts = []) {
   const totalItems = cart.reduce((sum, i) => sum + i.quantity, 0);
   const totalPrice = cart.reduce((sum, i) => sum + i.price * i.quantity, 0);
 
+  const [searchQuery, setSearchQuery] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const [debouncedQuery, setDebouncedQuery] = useState("");
+
+  useEffect(() => {
+    setIsLoading(true);
+    const handler = setTimeout(() => {
+      setDebouncedQuery(searchQuery);
+      setIsLoading(false);
+    }, 500);
+
+    return () => {
+      clearTimeout(handler);
+    };
+  }, [searchQuery]);
+
   const filteredProducts = initialProducts.filter(
-    (p) => p.category === activeTab
+    (p) =>
+      p.category === activeTab &&
+      p.name.toLowerCase().includes(debouncedQuery.toLowerCase())
   );
 
   const onCheckout = (cart) => {
@@ -79,5 +97,8 @@ export default function useMenuLogic(initialProducts = []) {
     totalItems,
     totalPrice,
     filteredProducts,
+    searchQuery,
+    setSearchQuery,
+    isLoading,
   };
 }

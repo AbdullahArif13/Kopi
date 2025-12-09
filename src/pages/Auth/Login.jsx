@@ -1,21 +1,26 @@
 "use client"
 
 import { useNavigate } from "react-router-dom"
-import useLogin from "./hooks/useLogin"
+import useAuth from "./useAuth"
 
 export default function Login({ setToggle }) {
   const navigate = useNavigate()
-  const { formData, loading, error, handleInputChange, login } = useLogin()
+  const { formData, loading, error, handleInputChange, login } = useAuth()
 
   const handleSubmit = async (e) => {
     e.preventDefault()
-    // const res = await login()
-    const res = true
 
-    if (res) {
+    const res = await login()
+
+    if (res.success) {
       localStorage.setItem("token", res.token)
       localStorage.setItem("user", JSON.stringify(res.user))
-      navigate("/menu")
+
+      if (res.user.role === "admin") {
+        navigate("/manajemen-menu")
+      } else {
+        navigate("/menu")
+      }
     }
   }
 
@@ -63,14 +68,10 @@ export default function Login({ setToggle }) {
 
         <p className="text-sm text-gray-600 mt-4">
           Belum punya akun?
-          <button onClick={setToggle} className="text-red-500 font-bold ml-1">
+          <button onClick={() => navigate("/register")} className="text-red-500 font-bold ml-1">
             REGISTRASI
           </button>
         </p>
-
-        <button onClick={() => navigate("/manajemenMenu")} className="mt-4 w-full max-w-sm text-red-500 py-2">
-          Login Admin
-        </button>
       </div>
     </div>
   )

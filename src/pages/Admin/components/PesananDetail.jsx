@@ -23,7 +23,7 @@ export default function PesananDetail({ selectedOrder, calculatePayment, handleS
           {selectedOrder.items.map((item, i) => (
             <div key={i} className="mb-4 border-b pb-4">
               <h3 className="font-semibold text-base mb-1">
-                {item.name} ({item.quantity})
+                {item.name} ({item.qty})
               </h3>
 
               <div className="flex items-center gap-2 text-gray-500 text-sm mb-2">
@@ -32,7 +32,7 @@ export default function PesananDetail({ selectedOrder, calculatePayment, handleS
               </div>
 
               <p className="font-semibold text-base">
-                Rp{(item.price * item.quantity).toLocaleString("id-ID")}
+                Rp{(item.price * item.qty).toLocaleString("id-ID")}
               </p>
             </div>
           ))}

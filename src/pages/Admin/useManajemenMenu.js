@@ -1,36 +1,76 @@
-"use client"
-
-import { useState } from "react"
+import { useState, useEffect } from "react";
+import { productService } from "../../service/MenuService";
 
 export default function useManajemenMenu() {
-  const [activeCategory, setActiveCategory] = useState("hot")
+  const [activeCategory, setActiveCategory] = useState("hot");
+  const [searchQuery, setSearchQuery] = useState("");
+  const [debouncedQuery, setDebouncedQuery] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+
+  const [menuItems, setMenuItems] = useState([]);
+
+  useEffect(() => {
+    const fetchProducts = async () => {
+      setIsLoading(true);
+
+      const data = await productService.getProducts();
+
+      setMenuItems(data);
+      setIsLoading(false);
+    };
+
+    fetchProducts();
+  }, []);
 
   const categories = [
     { id: "hot", label: "Hot Series", icon: "☕" },
     { id: "cold", label: "Cold Series", icon: "🥤" },
     { id: "small", label: "Small Bite", icon: "🍪" },
-  ]
+  ];
 
-  const [menuItems, setMenuItems] = useState([
-    { id: 1, name: "Nama Menu", price: 23000, category: "hot", image: null },
-    { id: 2, name: "Nama Menu", price: 23000, category: "hot", image: null },
-    { id: 3, name: "Nama Menu", price: 23000, category: "cold", image: null },
-    { id: 4, name: "Nama Menu", price: 23000, category: "small", image: null },
-  ])
+  // Debounce search
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      setDebouncedQuery(searchQuery);
+    }, 500);
 
-  const filteredItems = menuItems.filter((item) =>
-    item.selectedCategories?.length > 0
+    return () => clearTimeout(handler);
+  }, [searchQuery]);
+
+  // Filter berdasarkan kategori dan search
+  const filteredItems = menuItems.filter((item) => {
+    const matchCategory = item.selectedCategories?.length
       ? item.selectedCategories.includes(activeCategory)
-      : item.category === activeCategory,
-  )
+      : item.category === activeCategory;
 
-  const addMenuItem = (newItem) => {
-    setMenuItems([...menuItems, newItem])
-  }
+    const matchSearch = item.name
+      .toLowerCase()
+      .includes(debouncedQuery.toLowerCase());
 
-  const deleteMenuItem = (itemId) => {
-    setMenuItems(menuItems.filter((item) => item.id !== itemId))
-  }
+    return matchCategory && matchSearch;
+  });
+
+  // CREATE
+  const addMenuItem = async (newItem) => {
+    const created = await productService.createProduct(newItem);
+    setMenuItems((prev) => [...prev, created]);
+  };
+
+  // UPDATE (optional)
+  const updateMenuItem = async (id, updates) => {
+    const updated = await productService.updateProduct(id, updates);
+
+    setMenuItems((prev) =>
+      prev.map((item) => (item.id === id ? updated : item))
+    );
+  };
+
+  // DELETE
+  const deleteMenuItem = async (id) => {
+    await productService.deleteProduct(id);
+
+    setMenuItems((prev) => prev.filter((item) => item.id !== id));
+  };
 
   return {
     activeCategory,
@@ -39,6 +79,10 @@ export default function useManajemenMenu() {
     filteredItems,
     menuItems,
     addMenuItem,
+    updateMenuItem,
     deleteMenuItem,
-  }
+    searchQuery,
+    setSearchQuery,
+    isLoading,
+  };
 }

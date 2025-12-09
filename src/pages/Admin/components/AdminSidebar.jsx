@@ -8,14 +8,13 @@ export default function AdminSidebar({ isOpen, onClose }) {
   const location = useLocation()
 
   const menuItems = [
-    { label: "Manajemen Menu", path: "/manajemenMenu", icon: <Coffee size={20} /> },
-    { label: "Daftar Pesanan", path: "/manajemenPesanan", icon: <LayoutDashboard size={20} /> },
-    { label: "Riwayat Pesanan", path: "/riwayatPesanan", icon: <ClipboardList size={20} /> },
+    { label: "Manajemen Menu", path: "/manajemen-menu", icon: <Coffee size={20} /> },
+    { label: "Daftar Pesanan", path: "/manajemen-pesanan", icon: <LayoutDashboard size={20} /> },
+    { label: "Riwayat Pesanan", path: "/riwayat-pesanan", icon: <ClipboardList size={20} /> },
   ]
 
   return (
     <>
-      {/* Overlay with smooth fade */}
       <div
         className={`fixed inset-0 bg-black/20 backdrop-blur-[2px] z-40 transition-opacity duration-300 ease-in-out ${isOpen ? "opacity-100 visible" : "opacity-0 invisible pointer-events-none"
           }`}
@@ -67,13 +66,13 @@ export default function AdminSidebar({ isOpen, onClose }) {
 
           {/* Footer Actions */}
           <div className="p-6 border-t border-gray-100 space-y-3">
-            <button className="w-full flex items-center justify-center gap-2 px-4 py-3 text-red-600 bg-red-50 hover:bg-red-100 rounded-xl transition-colors font-medium">
+            <button onClick={() => navigate('/')} className="w-full flex items-center justify-center gap-2 px-4 py-3 text-red-600 bg-red-50 hover:bg-red-100 rounded-xl transition-colors font-medium">
               <LogOut size={18} />
               <span>Keluar</span>
             </button>
           </div>
         </div>
-      </div>
+      </div >
     </>
   )
 }
